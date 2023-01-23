@@ -1,0 +1,17 @@
+{
+    "name": "php2/php2-project",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Светлана"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.21"
+    }
+}
