@@ -1,15 +1,35 @@
 <?php
 
+use GeekBrains\php2\Blog\User;
+use GeekBrains\php2\Blog\Post;
+use GeekBrains\php2\Blog\Comment;
+
 require_once __DIR__ . '/vendor/autoload.php';
 
-//тест
-use App\User;
-use App\Post;
-use App\Comment;
+$faker = Faker\Factory::create('ru_RU');
 
-$user = new User('Вася', 'Петров');
-print "$user\n";
-$post = new Post(1, 'ДЗ 1', 'Как генерить данные с помощью библиотеки?');
-print "$post\n";
-$comment = new Comment(2, 1, 'И как получать аргументы командной строки?');
-print "$comment\n";
+$route = $argv[1] ?? null;
+switch ($route) {
+  case "user": 
+    $user = new User(
+      $faker->firstName('male'), 
+      $faker->lastName('male') );
+    print "$user\n";
+    break;
+  case "post":
+    $post = new Post(
+      $faker->randomDigitNotNull(), 
+      $faker->sentence(1), 
+      $faker->realText(rand(50,75)) );
+    print "$post\n";
+    break;
+  case "comment": 
+    $comment = new Comment(
+      $faker->randomDigitNotNull(),
+      $faker->randomDigitNotNull(),
+      $faker->realText(rand(50,75)) );
+    print "$comment\n";
+    break;
+  default: 
+    print "Параметров 'user', 'post' или 'comment' не найдено\n";
+}
