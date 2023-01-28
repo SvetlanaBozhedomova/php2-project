@@ -3,59 +3,63 @@
 namespace GeekBrains\php2\Blog;
 
 class Comment {
-  private int $id;
-  private int $authorId;
-  private int $postId;
+  private UUID $uuid;
+  private Post $post;
+  private User $author;
   private string $text;
 
-  public function __construct (int $authorId, int $postId, string $text)
+  public function __construct (UUID $uuid, Post $post, User $author, string $text)
   {
-    $this->authorId = $authorId;
-    $this->postId = $postId;
+    $this->uuid = $uuid;
+    $this->post = $post;
+    $this->author = $author;
     $this->text = $text;
   }
 
   public function __toString()
   {
-    return $this->text;
+    return (string)$this->author->name() . 
+      " к статье '" . (string)$this->post->title() .
+      "' пишет комментарий:\n $this->text";
+    //return $this->text;
   }
 
-  public function setId(int $id): void
+  public function setUuid(UUID $uuid): void
   {
-    $this->id = $id;
+    $this->uuid = $uuid;
   }
 
-  public function getId(): int
+  public function uuid(): UUID
   {
-    return $this->id;
+    return $this->uuid;
   }
 
-  public function setAuthorId(int $authorId): void
+  public function setAuthor(User $author): void
   {
-    $this->authorId = $authorId;
+    $this->author = $author;
   }
 
-  public function getAuthorId(): int
+  public function author(): User
   {
-    return $this->authorId;
+    return $this->author;
   }
 
-  public function setPostId(int $postId): void
+  public function setPost(Post $post): void
   {
-    $this->postId = $postId;
+    $this->post = $post;
   }
 
-  public function getPostId(): int
+  public function post(): Post
   {
-    return $this->postId;
+    return $this->post;
   }
 
-  public function setText(int $text): void
+  public function setText(string $text): void
   {
     $this->text = $text;
   }
 
-  public function getText(): string
+  public function text(): string
   {
     return $this->text;
   }    

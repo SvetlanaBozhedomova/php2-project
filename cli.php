@@ -5,7 +5,7 @@ use GeekBrains\php2\Blog\Post;
 use GeekBrains\php2\Blog\Comment;
 
 require_once __DIR__ . '/vendor/autoload.php';
-
+/*
 $faker = Faker\Factory::create('ru_RU');
 
 $route = $argv[1] ?? null;
@@ -33,3 +33,4 @@ switch ($route) {
   default: 
     print "Параметров 'user', 'post' или 'comment' не найдено\n";
 }
+*/

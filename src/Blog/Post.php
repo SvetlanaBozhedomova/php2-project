@@ -3,59 +3,61 @@
 namespace GeekBrains\php2\Blog;
 
 class Post {
-  private int $id;
-  private int $authorId;
+  private UUID $uuid;
+  private User $author;
   private string $title;
   private string $text;
   
-  public function __construct (int $authorId, string $title, string $text)
+  public function __construct (UUID $uuid, User $author, string $title, string $text)
   {
-    $this->authorId = $authorId;
+    $this->uuid = $uuid;
+    $this->author = $author;
     $this->title = $title;
     $this->text = $text;
   }
 
   public function __toString()
   {
-    return $this->title . ' >>> ' . $this->text;
+    return (string)$this->author->name() . " пишет статью:\n $this->title >>> $this->text";
+    //return $this->title . ' >>> ' . $this->text;
   }
 
-  public function setId(int $id): void
+  public function setUuid(UUID $uuid): void
   {
-    $this->id = $id;
+    $this->uuid = $uuid;
   }
 
-  public function getId(): int
+  public function uuid(): UUID
   {
-    return $this->id;
+    return $this->uuid;
   }
 
-  public function setAuthorId(int $authorId): void
+  public function setAuthor(User $author): void
   {
-    $this->authorId = $authorId;
+    $this->author = $author;
   }
 
-  public function getAuthorId(): int
+  public function author(): User
   {
-    return $this->authorId;
+    return $this->author;
   }
 
-  public function setTitle(int $title): void
+  public function setTitle(string $title): void
   {
     $this->title = $title;
   }
 
-  public function getTitle(): string
+  public function title(): string
   {
     return $this->title;
   }  
 
-  public function setText(int $text): void
+  public function setText(string $text): void
   {
     $this->text = $text;
   }
 
-  public function getText(): string
+  public function text(): string
   {
     return $this->text;
   }  

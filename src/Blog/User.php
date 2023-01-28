@@ -3,48 +3,49 @@
 namespace GeekBrains\php2\Blog;
 
 class User {
-  private int $id;
-  private string $firstName;
-  private string $lastName;
+  private UUID $uuid;
+  private string $username;
+  private Name $name;
   
-  public function __construct (string $firstName, string $lastName)
+  public function __construct(UUID $uuid, string $login, Name $name)
   {
-    $this->firstName = $firstName;
-    $this->lastName = $lastName;
+    $this->uuid = $uuid;
+    $this->username = $login;
+    $this->name = $name;
   }
 
   public function __toString()
   {
-    return $this->firstName . ' ' . $this->lastName;
+    return (string)$this->name;
   }
 
-  public function setId(int $id): void
+  public function setUuid(UUID $uuid): void
   {
-    $this->id = $id;
+    $this->uuid = $uuid;
   }
 
-  public function getId(): int
+  public function uuid(): UUID
   {
-    return $this->id;
+    return $this->uuid;
   }
 
-  public function setFirstName(string $firstName): void
+  public function setUsername(string $username): void
   {
-    $this->firstName = $firstName;
+    $this->username = $username;
   }
 
-  public function getFirstName(): string
+  public function username(): string
   {
-    return $this->firstName;
+    return $this->username;
   }
 
-  public function setLastName(string $lastName): void
+  public function setName(string $name): void
   {
-    $this->lastName = $lastName;
+    $this->name = $name;
   }
 
-  public function getLastName(): string
+  public function name(): string
   {
-    return $this->lastName;
+    return $this->name;
   }
 }
