@@ -16,7 +16,8 @@ class User {
 
   public function __toString()
   {
-    return (string)$this->name;
+    return (string)$this->name . ": username = $this->username, uuid = " . 
+      (string)$this->uuid . "\n";
   }
 
   public function setUuid(UUID $uuid): void
@@ -39,12 +40,12 @@ class User {
     return $this->username;
   }
 
-  public function setName(string $name): void
+  public function setName(Name $name): void
   {
     $this->name = $name;
   }
 
-  public function name(): string
+  public function name(): Name
   {
     return $this->name;
   }
