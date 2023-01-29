@@ -1,0 +1,19 @@
+{
+    "name": "php2/php2-project",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "GeekBrains\\php2\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Светлана"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.21",
+        "roave/security-advisories": "dev-latest",
+        "symfony/polyfill-uuid": "^1.27"
+    }
+}
