@@ -18,7 +18,8 @@ class Post {
 
   public function __toString()
   {
-    return (string)$this->author->name() . " пишет статью:\n $this->title >>> $this->text";
+    //return (string)$this->author() . " пишет статью:\n $this->title >>> $this->text\n";
+    return (string)$this->author->name() . " пишет статью:\n$this->title >>> $this->text\n";
     //return $this->title . ' >>> ' . $this->text;
   }
 

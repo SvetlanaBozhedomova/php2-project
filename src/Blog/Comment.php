@@ -20,7 +20,7 @@ class Comment {
   {
     return (string)$this->author->name() . 
       " к статье '" . (string)$this->post->title() .
-      "' пишет комментарий:\n $this->text";
+      "' пишет комментарий:\n $this->text\n";
     //return $this->text;
   }
 
