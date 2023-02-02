@@ -44,16 +44,16 @@ class SqliteUsersRepositoryTest extends TestCase
   public function testItGetUserByUuid(): void
   {
     $connectionStub = $this->createStub(PDO::class);
-    $statementMock = $this->createMock(PDOStatement::class);
+    $statementStub = $this->createStub(PDOStatement::class);
   
-    $statementMock->method('fetch')->willReturn([
+    $statementStub->method('fetch')->willReturn([
       'uuid' => '7fdc9d52-319f-4340-ba50-4c2da3947dfc',
       'username' => 'admin',
       'first_name' => 'Alex',
       'last_name' => 'Sidorov'
     ]);  
  
-    $connectionStub->method('prepare')->willReturn($statementMock);
+    $connectionStub->method('prepare')->willReturn($statementStub);
 
     // Создать SqliteUsersRepository(PDO) и вызвать get(UUID): User
     $repository = new SqliteUsersRepository($connectionStub);
