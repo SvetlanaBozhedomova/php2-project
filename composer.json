@@ -13,7 +13,14 @@
     ],
     "require": {
         "fakerphp/faker": "^1.21",
-        "roave/security-advisories": "dev-latest",
-        "symfony/polyfill-uuid": "^1.27"
+        "symfony/polyfill-uuid": "^1.27",
+        "ext-pdo": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "roave/security-advisories": "dev-latest"
+    },
+    "scripts": {
+        "test": "phpunit tests --testdox --colors"
     }
 }
