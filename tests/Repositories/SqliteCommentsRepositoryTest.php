@@ -54,38 +54,25 @@ class SqliteCommentsRepositoryTest extends TestCase
       'Комментарий'
     ));
   }
-/*
+
   // 2. Проверяет, что SqliteCommentsRepository получает комментарий по uuid
   public function testItGetCommentByUuid(): void
   {
     $connectionStub = $this->createStub(PDO::class);
-    $statementStubComment = $this->createStub(PDOStatement::class);
-    $statementStubPost = $this->createStub(PDOStatement::class);
-    $statementStubUser = $this->createStub(PDOStatement::class);
-
-    $statementStubComment->method('fetch')->willReturn([
-      'uuid' => '5aea6e16-3b14-4b15-b7a1-ea66d9005d28',
-      'post_uuid' => '96dbc4d2-0326-4e0a-a7e3-0ea914840b03',
-      'author_uuid' => '7fdc9d52-319f-4340-ba50-4c2da3947dfc',
-      'text' => 'Комментарий'
-    ]); 
+    $statementMock = $this->createMock(PDOStatement::class);
   
-    $statementStubPost->method('fetch')->willReturn([
-      'uuid' => '96dbc4d2-0326-4e0a-a7e3-0ea914840b03',
-      'author_uuid' => '7fdc9d52-319f-4340-ba50-4c2da3947dfc',
+    $statementMock->method('fetch')->willReturn([
+      'uuid' => '5aea6e16-3b14-4b15-b7a1-ea66d9005d28',
+      'post_uuid' => '5aea6e16-3b14-4b15-b7a1-ea66d9005d28',
+      'author_uuid' => '5aea6e16-3b14-4b15-b7a1-ea66d9005d28',
       'title' => 'Заголовок',
-      'text' => 'Текст статьи'
-    ]); 
-
-    $statementStubUser->method('fetch')->willReturn([
-      'uuid' => '7fdc9d52-319f-4340-ba50-4c2da3947dfc',
+      'text' => 'Текст',
       'username' => 'admin',
       'first_name' => 'Alex',
       'last_name' => 'Sidorov'
     ]);  
  
-    $connectionStub->method('prepare')->willReturn(
-      $statementStubComment, $statementStubPost, $statementStubUser);
+    $connectionStub->method('prepare')->willReturn($statementMock);
 
     // Создать SqliteCommentsRepository(PDO) и вызвать get(UUID): Comment
     $repository = new SqliteCommentsRepository($connectionStub);
@@ -95,7 +82,7 @@ class SqliteCommentsRepositoryTest extends TestCase
     $this->assertSame('5aea6e16-3b14-4b15-b7a1-ea66d9005d28',
       (string)$comment->uuid());
   }
-*/
+
   // 3. Проверяет, что SqliteCommentsRepository бросает исключение, 
   // когда запрашиваемый по uuid комментарий не найден 
   public function testItThrowsAnExceptionWhenCommentNotFound(): void
