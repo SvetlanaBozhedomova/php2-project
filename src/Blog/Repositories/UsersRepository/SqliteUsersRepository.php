@@ -7,6 +7,7 @@ use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Name;
 use GeekBrains\php2\Blog\User;
 use PDO;
+use PDOStatement;
 
 class SqliteUsersRepository implements UsersRepositoryInterface
 {
@@ -34,12 +35,32 @@ class SqliteUsersRepository implements UsersRepositoryInterface
   {
     $stm = $this->connection->prepare('SELECT * FROM users WHERE uuid = :uuid');
     $stm->execute([':uuid' => (string)$uuid]);
+    // разбор ответа и формирование объекта User
+    return $this->getUser($stm, (string)$uuid);
+  }
+
+  // поиск User'а по username
+  public function getByUsername(string $username): User
+  {
+    $stm = $this->connection->prepare('SELECT * FROM users 
+      WHERE username = :username');
+    $stm->execute([':username' => $username]);
+    // разбор ответа и формирование объекта User
+    return $this->getUser($stm, $username);
+  }
+
+  // для возврата User'а в get и getByUsername (одинаковая часть)
+  private function getUser(PDOStatement $stm, string $str): User
+  {  
+    // получение результата запроса
     $result = $stm->fetch(PDO::FETCH_ASSOC);
     if ($result === false) {
-      throw new UserNotFoundException("Cannot get user: $uuid");
+      throw new UserNotFoundException("Cannot get user: $str");
     }
+    // создание объекта User, который надо вернуть из get'ов
     return new User(
-      new UUID($result['uuid']), $result['username'],
+      new UUID($result['uuid']), 
+      $result['username'],
       new Name($result['first_name'], $result['last_name'])
     );
   }
