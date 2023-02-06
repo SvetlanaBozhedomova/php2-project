@@ -10,8 +10,13 @@ use GeekBrains\php2\Http\SuccessfulResponse;
 use GeekBrains\php2\Http\ErrorResponse;
 use GeekBrains\php2\Blog\Exceptions\HttpException;
 use GeekBrains\php2\Blog\Repositories\UsersRepository\SqliteUsersRepository;
+use GeekBrains\php2\Blog\Repositories\PostsRepository\SqlitePostsRepository;
+use GeekBrains\php2\Blog\Repositories\CommentsRepository\SqliteCommentsRepository;
 use GeekBrains\php2\Http\Actions\Users\FindByUsername;
 use GeekBrains\php2\Http\Actions\Users\CreateUser;
+use GeekBrains\php2\Http\Actions\Posts\CreatePost;
+use GeekBrains\php2\Http\Actions\Posts\DeletePost;
+use GeekBrains\php2\Http\Actions\Comments\CreateComment;
 use GeekBrains\php2\Blog\Exceptions\AppException;
 
 require_once __DIR__ . '/vendor/autoload.php';
@@ -50,8 +55,28 @@ $routes = [
     '/users/create' => new CreateUser(
       new SqliteUsersRepository(
         new PDO('sqlite:' . __DIR__ . '/blog.sqlite') )
-    )
+    ),
+    '/posts/create' => new CreatePost(
+      new SqliteUsersRepository(
+        new PDO('sqlite:' . __DIR__ . '/blog.sqlite') ),
+      new SqlitePostsRepository(
+        new PDO('sqlite:' . __DIR__ . '/blog.sqlite') )
+    ),
+    '/comments/create' => new CreateComment(
+      new SqliteUsersRepository(
+        new PDO('sqlite:' . __DIR__ . '/blog.sqlite') ),
+      new SqlitePostsRepository(
+        new PDO('sqlite:' . __DIR__ . '/blog.sqlite') ),
+      new SqliteCommentsRepository(
+        new PDO('sqlite:' . __DIR__ . '/blog.sqlite') )
+    ) 
   ],
+  'DELETE' => [
+    '/posts' => new DeletePost(
+      new SqlitePostsRepository(
+        new PDO('sqlite:' . __DIR__ . '/blog.sqlite') )
+    )
+  ]
 ];
 
 // Если нет маршрутов для метода запроса - возвращаем неуспешный ответ

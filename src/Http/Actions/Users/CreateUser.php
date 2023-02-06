@@ -8,7 +8,6 @@ use GeekBrains\php2\Http\Response;
 use GeekBrains\php2\Http\SuccessfulResponse;
 use GeekBrains\php2\Http\ErrorResponse;
 use GeekBrains\php2\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
-use GeekBrains\php2\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\php2\Blog\Exceptions\HttpException;
 use GeekBrains\php2\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\php2\Blog\User;
@@ -31,10 +30,10 @@ class CreateUser implements ActionInterface
       $newUserUuid = UUID::random();
       $user = new User(
         $newUserUuid,
-        (string)$request->jsonBodyField('username'),
+        $request->jsonBodyField('username'),
         new Name (
-          (string)$request->jsonBodyField('first_name'),
-          (string)$request->jsonBodyField('last_name')
+          $request->jsonBodyField('first_name'),
+          $request->jsonBodyField('last_name')
         )
       );
     } catch (HttpException $e) {
