@@ -6,6 +6,11 @@
             "GeekBrains\\php2\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "GeekBrains\\php2\\UnitTests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Светлана"
