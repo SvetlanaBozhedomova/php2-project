@@ -9,14 +9,14 @@ use GeekBrains\php2\Http\Request;
 use GeekBrains\php2\Http\SuccessfulResponse;
 use GeekBrains\php2\Http\ErrorResponse;
 use GeekBrains\php2\Blog\Exceptions\HttpException;
-use GeekBrains\php2\Blog\Repositories\UsersRepository\SqliteUsersRepository;
-use GeekBrains\php2\Blog\Repositories\PostsRepository\SqlitePostsRepository;
-use GeekBrains\php2\Blog\Repositories\CommentsRepository\SqliteCommentsRepository;
 use GeekBrains\php2\Http\Actions\Users\FindByUsername;
 use GeekBrains\php2\Http\Actions\Users\CreateUser;
 use GeekBrains\php2\Http\Actions\Posts\CreatePost;
-use GeekBrains\php2\Http\Actions\Posts\DeletePost;
 use GeekBrains\php2\Http\Actions\Comments\CreateComment;
+use GeekBrains\php2\Http\Actions\Likes\CreateLike;
+use GeekBrains\php2\Http\Actions\Posts\DeletePost;
+
+
 use GeekBrains\php2\Blog\Exceptions\AppException;
 
 // Подключаем файл bootstrap.php и получаем настроенный контейнер
@@ -39,7 +39,7 @@ try {
   $method = $request->method();
 } catch (HttpException $e) {
   (new ErrorResponse)->send();
-return;
+  return;
 }
 
 // Ассоциируем маршруты с именами классов действий,
@@ -52,7 +52,8 @@ $routes = [
   'POST' => [
     '/users/create' => CreateUser::class,
     '/posts/create' => CreatePost::class,
-    '/comments/create' => CreateComment::class
+    '/comments/create' => CreateComment::class,
+    '/likes/create' => CreateLike::class
   ],
   'DELETE' => [
     '/posts' => DeletePost::class
@@ -77,6 +78,7 @@ try {
   $response = $action->handle($request);
 } catch (AppException $e) {
   (new ErrorResponse($e->getMessage()))->send();
+  return;
 }
 $response->send();
   

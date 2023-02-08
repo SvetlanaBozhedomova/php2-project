@@ -37,26 +37,19 @@ class CreateComment implements ActionInterface
 
   public function handle(Request $request): Response
   {
-    // Пытаемся создать пользователя из данных запроса
+    // Пытаемся получить post_uuid и author_uuid из данных запроса
     try {
       $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
+      $postUuid = new UUID($request->jsonBodyField('post_uuid'));
     } catch (HttpException | InvalidArgumentException $e) {
       return new ErrorResponse($e->getMessage());
     }
-    // Пытаемся найти пользователя в репозитории
+    // Пытаемся найти пользователя и статью в репозиториях
     try {
       $user = $this->usersRepository->get($authorUuid);
     } catch (UserNotFoundException $e) {
       return new ErrorResponse($e->getMessage());
     }
-
-    // Пытаемся создать статью из данных запроса
-    try {
-      $postUuid = new UUID($request->jsonBodyField('post_uuid'));
-    } catch (HttpException | InvalidArgumentException $e) {
-      return new ErrorResponse($e->getMessage());
-    }
-    // Пытаемся найти статью в репозитории
     try {
       $post = $this->postsRepository->get($postUuid);
     } catch (PostNotFoundException $e) {
