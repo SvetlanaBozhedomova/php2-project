@@ -8,6 +8,7 @@ use GeekBrains\php2\Blog\Name;
 use GeekBrains\php2\Blog\User;
 use PDO;
 use PDOStatement;
+//use Psr\Log\LoggerInterface;
 
 class SqliteUsersRepository implements UsersRepositoryInterface
 {
@@ -55,6 +56,7 @@ class SqliteUsersRepository implements UsersRepositoryInterface
     // получение результата запроса
     $result = $stm->fetch(PDO::FETCH_ASSOC);
     if ($result === false) {
+      //$this->logger->warning("Cannot get user: $str");
       throw new UserNotFoundException("Cannot get user: $str");
     }
     // создание объекта User, который надо вернуть из get'ов

@@ -12,13 +12,17 @@ use GeekBrains\php2\Blog\Repositories\LikesRepository\LikesRepositoryInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LoggerInterface;
+use Dotenv\Dotenv;
 
 require_once __DIR__ . '/vendor/autoload.php';
+
+Dotenv::createImmutable(__DIR__)->safeLoad();
 
 $container = new DIContainer();
 $container->bind(
   PDO::class,
-  new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
+  //new PDO('sqlite:' . __DIR__ . '/blog.sqlite')
+  new PDO('sqlite:' . __DIR__ . '/' . $_SERVER['SQLITE_DB_PATH'])
 );
 $container->bind(
   UsersRepositoryInterface::class,
@@ -37,6 +41,7 @@ $container->bind(
   SqliteLikesRepository::class
 );
 
+/*
 // Добавляем логгер в контейнер
 $container->bind(
   LoggerInterface::class,
@@ -55,6 +60,27 @@ $container->bind(
     ->pushHandler(          // вызывается первым
       new StreamHandler("php://stdout") //запись в консоль
     )
+); */
+
+$logger = (new Logger('blog'));
+if ('yes' === $_SERVER['LOG_TO_FILES']) {
+  $logger
+    ->pushHandler(new StreamHandler(
+      __DIR__ . '/logs/blog.log'
+    ))
+    ->pushHandler(new StreamHandler(
+      __DIR__ . '/logs/blog.error.log',
+      level: Logger::ERROR,
+      bubble: false,
+    ));
+}
+if ('yes' === $_SERVER['LOG_TO_CONSOLE']) {
+  $logger->pushHandler(new StreamHandler("php://stdout"));
+}
+
+$container->bind(
+  LoggerInterface::class,
+  $logger
 );
 
 // Возвращаем объект контейнера

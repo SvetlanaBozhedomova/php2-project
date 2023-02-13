@@ -35,6 +35,8 @@ class CreatePost implements ActionInterface
 
   public function handle(Request $request): Response
   {
+    $this->logger->info("CreatePost started");
+
     // Пытаемся создать пользователя из данных запроса
     try {
       $authorUuid = new UUID($request->jsonBodyField('author_uuid'));

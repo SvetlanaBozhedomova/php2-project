@@ -1,10 +1,5 @@
 <?php
 
-/*  //Проверка связи
-http_response_code(201);
-header('Some header: some value');
-*/
-
 use GeekBrains\php2\Http\Request;
 use GeekBrains\php2\Http\SuccessfulResponse;
 use GeekBrains\php2\Http\ErrorResponse;
@@ -15,11 +10,9 @@ use GeekBrains\php2\Http\Actions\Posts\CreatePost;
 use GeekBrains\php2\Http\Actions\Comments\CreateComment;
 use GeekBrains\php2\Http\Actions\Likes\CreateLike;
 use GeekBrains\php2\Http\Actions\Posts\DeletePost;
-
-
 use GeekBrains\php2\Blog\Exceptions\AppException;
+use Psr\Log\LoggerInterface;
 
-// Подключаем файл bootstrap.php и получаем настроенный контейнер
 $container = require __DIR__ . '/bootstrap.php';
 
 $request = new Request(
@@ -75,9 +68,8 @@ if (!array_key_exists($method, $routes)
 // Получаем имя класса действия для маршрута
 $actionClassName = $routes[$method][$path];
 
-// С помощью контейнера создаём объект нужного действия
-$action = $container->get($actionClassName);
 try {
+  $action = $container->get($actionClassName);
   $response = $action->handle($request);
 } catch (AppException $e) {
   $logger->error($e->getMessage(), ['exception' => $e]);
