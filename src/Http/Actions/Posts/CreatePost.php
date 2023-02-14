@@ -7,48 +7,39 @@ use GeekBrains\php2\Http\Request;
 use GeekBrains\php2\Http\Response;
 use GeekBrains\php2\Http\SuccessfulResponse;
 use GeekBrains\php2\Http\ErrorResponse;
-use GeekBrains\php2\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
+//use GeekBrains\php2\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\php2\Blog\Repositories\PostsRepository\PostsRepositoryInterface;
-use GeekBrains\php2\Blog\Exceptions\UserNotFoundException;
+//use GeekBrains\php2\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\php2\Blog\Exceptions\HttpException;
-use GeekBrains\php2\Blog\Exceptions\InvalidArgumentException;
+//use GeekBrains\php2\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Post;
 use Psr\Log\LoggerInterface;
+use GeekBrains\php2\Http\Auth\IdentificationInterface;
 
 class CreatePost implements ActionInterface
 {
-  private UsersRepositoryInterface $usersRepository;
   private PostsRepositoryInterface $postsRepository;
   private LoggerInterface $logger;
+  private IdentificationInterface $identification;
 
   public function __construct(
-    UsersRepositoryInterface $usersRepository,
     PostsRepositoryInterface $postsRepository,
-    LoggerInterface $logger)
+    LoggerInterface $logger,
+    IdentificationInterface $identification)
   {
-    $this->usersRepository = $usersRepository;
     $this->postsRepository = $postsRepository;
     $this->logger = $logger;
+    $this->identification = $identification;
   }
 
   public function handle(Request $request): Response
   {
     $this->logger->info("CreatePost started");
 
-    // Пытаемся создать пользователя из данных запроса
-    try {
-      $authorUuid = new UUID($request->jsonBodyField('author_uuid'));
-    } catch (HttpException | InvalidArgumentException $e) {
-      return new ErrorResponse($e->getMessage());
-    }
-    // Пытаемся найти пользователя в репозитории
-    try {
-      $user = $this->usersRepository->get($authorUuid);
-    } catch (UserNotFoundException $e) {
-      return new ErrorResponse($e->getMessage());
-    }
+    // Идентифицируем пользователя - автора статьи
+    $user = $this->identification->user($request);
 
     // Генерируем uuid для новой статьи
     $newPostUuid = UUID::random();

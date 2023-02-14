@@ -13,6 +13,8 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LoggerInterface;
 use Dotenv\Dotenv;
+use GeekBrains\php2\Http\Auth\IdentificationInterface;
+use GeekBrains\php2\Http\Auth\JsonBodyUuidIdentification;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -62,6 +64,7 @@ $container->bind(
     )
 ); */
 
+// Добавляем логгер в контейнер
 $logger = (new Logger('blog'));
 if ('yes' === $_SERVER['LOG_TO_FILES']) {
   $logger
@@ -77,10 +80,14 @@ if ('yes' === $_SERVER['LOG_TO_FILES']) {
 if ('yes' === $_SERVER['LOG_TO_CONSOLE']) {
   $logger->pushHandler(new StreamHandler("php://stdout"));
 }
-
 $container->bind(
   LoggerInterface::class,
   $logger
+);
+// Идентификация
+$container->bind(
+  IdentificationInterface::class,
+  JsonBodyUuidIdentification::class
 );
 
 // Возвращаем объект контейнера
