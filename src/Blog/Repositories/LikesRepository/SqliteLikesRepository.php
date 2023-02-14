@@ -7,14 +7,17 @@ use GeekBrains\php2\Blog\Exceptions\LikeExistsException;
 use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Like;
 use PDO;
+use Psr\Log\LoggerInterface;
 
 class SqliteLikesRepository implements LikesRepositoryInterface
 {
   private PDO $connection;
+  private LoggerInterface $logger;
 
-  public function __construct(PDO $connection)
+  public function __construct(PDO $connection, LoggerInterface $logger)
   {
     $this->connection = $connection;
+    $this->logger = $logger;
   }
 
   public function save(Like $like):void
@@ -26,7 +29,8 @@ class SqliteLikesRepository implements LikesRepositoryInterface
       ':uuid' => (string)$like->uuid(),
       ':post_uuid' => (string)$like->postUuid(),
       ':user_uuid' => (string)$like->userUuid()
-    ]);  
+    ]); 
+    $this->logger->info('Like created: ' . (string)$like->uuid()); 
   }
 
   public function getByPostUuid(UUID $postUuid): array
@@ -36,7 +40,9 @@ class SqliteLikesRepository implements LikesRepositoryInterface
     $stm->execute([':post_uuid' => (string)$postUuid]);
     $result = $stm->fetchAll(PDO::FETCH_ASSOC);
     if ($result === false) {
-      throw new LikeNotFoundException("No likes to the post: $postUuid");
+      $message = "No likes to the post: $postUuid";
+      $this->logger->warning($message);
+      throw new LikeNotFoundException($message);
     }
     $likes = [];
     foreach ($result as $like) {
@@ -60,8 +66,9 @@ class SqliteLikesRepository implements LikesRepositoryInterface
 
     $isExisted = $stm->fetch();
     if ($isExisted) {
-      throw new LikeExistsException(
-        "The like for this post from this user already exists");
+      $message = 'The like for this post from this user already exists';
+      $this->logger->warning($message);
+      throw new LikeExistsException($message);
     }  
   }
 }

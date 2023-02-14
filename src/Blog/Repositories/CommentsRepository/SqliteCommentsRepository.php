@@ -8,14 +8,17 @@ use GeekBrains\php2\Blog\Exceptions\CommentNotFoundException;
 use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Comment;
 use PDO;
+use Psr\Log\LoggerInterface;
 
 class SqliteCommentsRepository implements CommentsRepositoryInterface
 {
   private PDO $connection;
+  private LoggerInterface $logger;
 
-  public function __construct(PDO $connection)
+  public function __construct(PDO $connection, LoggerInterface $logger)
   {
     $this->connection = $connection;
+    $this->logger = $logger;
   }
 
   public function save(Comment $comment):void
@@ -29,6 +32,7 @@ class SqliteCommentsRepository implements CommentsRepositoryInterface
       ':author_uuid' => (string)$comment->author()->uuid(),
       ':text' => $comment->text()
     ]);  
+    $this->logger->info('Comment created: ' . (string)$comment->uuid());
   }
 
   public function get(UUID $uuid): Comment
@@ -37,7 +41,9 @@ class SqliteCommentsRepository implements CommentsRepositoryInterface
     $stm->execute([':uuid' => (string)$uuid]);
     $result = $stm->fetch(PDO::FETCH_ASSOC);
     if ($result === false) {
-      throw new CommentNotFoundException("Cannot get comment: $uuid");
+      $message = "Cannot get comment: $uuid";
+      $this->logger->warning($message);
+      throw new CommentNotFoundException($message);
     }
 
     $usersRepository = new SqliteUsersRepository($this->connection);

@@ -7,14 +7,17 @@ use GeekBrains\php2\Blog\Exceptions\PostNotFoundException;
 use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Post;
 use PDO;
+use Psr\Log\LoggerInterface;
 
 class SqlitePostsRepository implements PostsRepositoryInterface
 {
   private PDO $connection;
+  private LoggerInterface $logger;
 
-  public function __construct(PDO $connection)
+  public function __construct(PDO $connection, LoggerInterface $logger)
   {
     $this->connection = $connection;
+    $this->logger = $logger;
   }
 
   public function save(Post $post):void
@@ -27,7 +30,8 @@ class SqlitePostsRepository implements PostsRepositoryInterface
       ':author_uuid' => (string)$post->author()->uuid(),
       ':title' => $post->title(),
       ':text' => $post->text()
-    ]);  
+    ]); 
+    $this->logger->info('Post created: ' . (string)$post->uuid()); 
   }
 
   public function get(UUID $uuid): Post
@@ -36,7 +40,9 @@ class SqlitePostsRepository implements PostsRepositoryInterface
     $stm->execute([':uuid' => (string)$uuid]);
     $result = $stm->fetch(PDO::FETCH_ASSOC);
     if ($result === false) {
-      throw new PostNotFoundException("Cannot get post: $uuid");
+      $message = "Cannot get post: $uuid";
+      $this->logger->warning($message);
+      throw new PostNotFoundException($message);
     }
 
     $usersRepository = new SqliteUsersRepository($this->connection);
@@ -53,5 +59,6 @@ class SqlitePostsRepository implements PostsRepositoryInterface
     $stm = $this->connection->prepare('DELETE FROM posts
       WHERE posts.uuid = :uuid');
     $stm->execute([':uuid' => (string)$uuid]);
+    $this->logger->info('Post deleted: ' . (string)$uuid); 
   }
 }

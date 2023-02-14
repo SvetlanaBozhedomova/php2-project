@@ -10,14 +10,19 @@ use GeekBrains\php2\Http\Request;
 use GeekBrains\php2\Http\Response;
 use GeekBrains\php2\Http\ErrorResponse;
 use GeekBrains\php2\Http\SuccessfulResponse;
+use Psr\Log\LoggerInterface;
 
 class DeletePost implements ActionInterface
 {
   private PostsRepositoryInterface $postsRepository;
+  private LoggerInterface $logger;
 
-  public function __construct(PostsRepositoryInterface $postsRepository)
+  public function __construct(
+    PostsRepositoryInterface $postsRepository,
+    LoggerInterface $logger)
   {
     $this->postsRepository = $postsRepository;
+    $this->logger = $logger;
   }
 
   public function handle(Request $request): Response
@@ -39,6 +44,7 @@ class DeletePost implements ActionInterface
     
     // Удаляем статью из репозитория
     $this->postsRepository->delete(new UUID($postUuid));
+    $this->logger->info("Post deleted: $newPostUuid");
     // Возвращаем успешный ответ с uuid удалённой статьи
     return new SuccessfulResponse(['uuid' => $postUuid]);
   }

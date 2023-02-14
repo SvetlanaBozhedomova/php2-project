@@ -13,14 +13,19 @@ use GeekBrains\php2\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\Name;
 use GeekBrains\php2\Blog\UUID;
+use Psr\Log\LoggerInterface;
 
 class CreateUser implements ActionInterface
 {
   private UsersRepositoryInterface $usersRepository;
+  private LoggerInterface $logger;
 
-  public function __construct(UsersRepositoryInterface $usersRepository)
+  public function __construct(
+    UsersRepositoryInterface $usersRepository,
+    LoggerInterface $logger)
   {
     $this->usersRepository = $usersRepository;
+    $this->logger = $logger;
   }
 
   public function handle(Request $request): Response
@@ -41,6 +46,7 @@ class CreateUser implements ActionInterface
     }
     // Сохраняем пользователя в репозитории
     $this->usersRepository->save($user);
+    $this->logger->info("User created: $newUserUuid");
     // Возвращаем успешный ответ, содержащий UUID нового пользователя 
     return new SuccessfulResponse(['uuid' => (string)$newUserUuid]);
   }

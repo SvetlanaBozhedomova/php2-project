@@ -7,11 +7,8 @@ use GeekBrains\php2\Http\Request;
 use GeekBrains\php2\Http\Response;
 use GeekBrains\php2\Http\SuccessfulResponse;
 use GeekBrains\php2\Http\ErrorResponse;
-//use GeekBrains\php2\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\php2\Blog\Repositories\PostsRepository\PostsRepositoryInterface;
-//use GeekBrains\php2\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\php2\Blog\Exceptions\HttpException;
-//use GeekBrains\php2\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Post;
@@ -36,7 +33,7 @@ class CreatePost implements ActionInterface
 
   public function handle(Request $request): Response
   {
-    $this->logger->info("CreatePost started");
+    //$this->logger->info("CreatePost started");
 
     // Идентифицируем пользователя - автора статьи
     $user = $this->identification->user($request);

@@ -8,15 +8,17 @@ use GeekBrains\php2\Blog\Name;
 use GeekBrains\php2\Blog\User;
 use PDO;
 use PDOStatement;
-//use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 
 class SqliteUsersRepository implements UsersRepositoryInterface
 {
   private PDO $connection;
+  private LoggerInterface $logger;
 
-  public function __construct(PDO $connection)
+  public function __construct(PDO $connection, LoggerInterface $logger)
   {
     $this->connection = $connection;
+    $this->logger = $logger;
   }
 
   public function save(User $user):void
@@ -30,6 +32,7 @@ class SqliteUsersRepository implements UsersRepositoryInterface
       ':first_name' => (string)$user->name()->first(),
       ':last_name' => (string)$user->name()->last()
     ]);  
+    $this->logger->info('User created: ' . (string)$user->uuid());
   }
 
   public function get(UUID $uuid): User
@@ -56,8 +59,9 @@ class SqliteUsersRepository implements UsersRepositoryInterface
     // получение результата запроса
     $result = $stm->fetch(PDO::FETCH_ASSOC);
     if ($result === false) {
-      //$this->logger->warning("Cannot get user: $str");
-      throw new UserNotFoundException("Cannot get user: $str");
+      $message = "Cannot get user: $str";
+      $this->logger->warning($message);
+      throw new UserNotFoundException($message);
     }
     // создание объекта User, который надо вернуть из get'ов
     return new User(

@@ -15,21 +15,25 @@ use GeekBrains\php2\Blog\Exceptions\HttpException;
 use GeekBrains\php2\Blog\Exceptions\InvalidArgumentException;
 use GeekBrains\php2\Blog\Like;
 use GeekBrains\php2\Blog\UUID;
+use Psr\Log\LoggerInterface;
 
 class CreateLike implements ActionInterface
 {
   private LikesRepositoryInterface $likesRepository;
   private UsersRepositoryInterface $usersRepository;
   private PostsRepositoryInterface $postsRepository;
+  private LoggerInterface $logger;
  
   public function __construct(
     LikesRepositoryInterface $likesRepository,
     UsersRepositoryInterface $usersRepository,
-    PostsRepositoryInterface $postsRepository)
+    PostsRepositoryInterface $postsRepository,
+    LoggerInterface $logger)
   {
     $this->likesRepository = $likesRepository;
     $this->usersRepository = $usersRepository;
     $this->postsRepository = $postsRepository;
+    $this->logger = $logger;
   }
 
   public function handle(Request $request): Response
@@ -64,6 +68,7 @@ class CreateLike implements ActionInterface
     $like = new Like($newLikeUuid, $postUuid, $userUuid);
     // Сохраняем новый лайк в репозитории
     $this->likesRepository->save($like);
+    $this->logger->info("Like created: $newLikeUuid");
     // Возвращаем успешный ответ с uuid нового лайка
     return new SuccessfulResponse(['uuid' => (string)$newLikeUuid]);
   }

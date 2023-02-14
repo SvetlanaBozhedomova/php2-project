@@ -18,21 +18,25 @@ use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Post;
 use GeekBrains\php2\Blog\Comment;
+use Psr\Log\LoggerInterface;
 
 class CreateComment implements ActionInterface
 {
   private UsersRepositoryInterface $usersRepository;
   private PostsRepositoryInterface $postsRepository;
   private CommentsRepositoryInterface $commentsRepository;
+  private LoggerInterface $logger;
 
   public function __construct(
     UsersRepositoryInterface $usersRepository,
     PostsRepositoryInterface $postsRepository,
-    CommentsRepositoryInterface $commentsRepository)
+    CommentsRepositoryInterface $commentsRepository,
+    LoggerInterface $logger)
   {
     $this->usersRepository = $usersRepository;
     $this->postsRepository = $postsRepository;
     $this->commentsRepository = $commentsRepository;
+    $this->logger = $logger;
   }
 
   public function handle(Request $request): Response
@@ -71,6 +75,7 @@ class CreateComment implements ActionInterface
     }
     // Сохраняем новый комментарий в репозитории
     $this->commentsRepository->save($comment);
+    $this->logger->info("Comment created: $newCommentUuid");
     // Возвращаем успешный ответ с uuid нового комментария
     return new SuccessfulResponse(['uuid' => (string)$newCommentUuid]);
   }
