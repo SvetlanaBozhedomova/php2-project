@@ -71,7 +71,7 @@ $actionClassName = $routes[$method][$path];
 try {
   $action = $container->get($actionClassName);
   $response = $action->handle($request);
-} catch (AppException $e) {
+} catch (AppException|PDOException $e) {
   $logger->error($e->getMessage(), ['exception' => $e]);
   (new ErrorResponse($e->getMessage()))->send();
   return;

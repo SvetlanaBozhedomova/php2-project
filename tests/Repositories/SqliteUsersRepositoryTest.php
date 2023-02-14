@@ -10,6 +10,7 @@ use GeekBrains\php2\Blog\User;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\TestCase;
+use GeekBrains\php2\UnitTests\DummyLogger;
 
 class SqliteUsersRepositoryTest extends TestCase
 {
@@ -32,7 +33,7 @@ class SqliteUsersRepositoryTest extends TestCase
     $connectionStub->method('prepare')->willReturn($statementMock);
     
     // Создать SqliteUsersRepository(PDO) и вызвать save(User)
-    $repository = new SqliteUsersRepository($connectionStub);
+    $repository = new SqliteUsersRepository($connectionStub, new DummyLogger());
     $repository->save( new User(
       new UUID('7fdc9d52-319f-4340-ba50-4c2da3947dfc'),
       'admin',
@@ -56,7 +57,7 @@ class SqliteUsersRepositoryTest extends TestCase
     $connectionStub->method('prepare')->willReturn($statementStub);
 
     // Создать SqliteUsersRepository(PDO) и вызвать get(UUID): User
-    $repository = new SqliteUsersRepository($connectionStub);
+    $repository = new SqliteUsersRepository($connectionStub, new DummyLogger());
     $user = $repository->get( new UUID('7fdc9d52-319f-4340-ba50-4c2da3947dfc'));
     // Сравнить заданное (string)uuid и полученное (string)$user->uuid()
     $this->assertSame('7fdc9d52-319f-4340-ba50-4c2da3947dfc', (string)$user->uuid());
@@ -73,7 +74,7 @@ class SqliteUsersRepositoryTest extends TestCase
     $connectionStub->method('prepare')->willReturn($statementStub);
     
     // Создать SqliteUsersRepository(PDO)
-    $repository = new SqliteUsersRepository($connectionStub);
+    $repository = new SqliteUsersRepository($connectionStub, new DummyLogger());
     // Описать тип ожидаемого исключения и его сообщения
     $this->expectException(UserNotFoundException::class);
     $this->expectExceptionMessage('Cannot get user: 7fdc9d52-319f-4340-ba50-4c2da3947dfc'); 

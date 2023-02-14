@@ -14,6 +14,7 @@ use GeekBrains\php2\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\UUID;
 use PHPUnit\Framework\TestCase;
+use GeekBrains\php2\UnitTests\DummyLogger;
 
 class CreateUserCommandTest extends TestCase
 {
@@ -54,7 +55,7 @@ class CreateUserCommandTest extends TestCase
     };
 
     // Создаём объект команды: __construct( UsersRepositoryInterface $var )
-    $command = new CreateUserCommand($usersRepository);
+    $command = new CreateUserCommand($usersRepository, new DummyLogger());
     // Описываем тип ожидаемого исключения и его сообщение
     $this->expectException(ArgumentsException::class);
     $this->expectExceptionMessage('No such argument: first_name');
@@ -66,12 +67,12 @@ class CreateUserCommandTest extends TestCase
   //3. Использование функции для создания анонимного класса
   
   // Функция возвращает объект типа UsersRepositoryInterface
-  private function makeUsersRepository(): UsersRepositoryInterface
-  {
-    return new class implements UsersRepositoryInterface {
-       // здесь методы save, get, getByUsername
-    };
-  }
+  //private function makeUsersRepository(): UsersRepositoryInterface
+  //{
+  //  return new class implements UsersRepositoryInterface {
+  //     // здесь методы save, get, getByUsername
+  //  };
+  //}
   //вызов: 
   // $command = new CreateUserCommand($this->makeUsersRepository());
   
@@ -104,7 +105,7 @@ class CreateUserCommandTest extends TestCase
     };
 
     // Создаём объект команды: __construct( UsersRepositoryInterface $var )
-    $command = new CreateUserCommand( $usersRepository );
+    $command = new CreateUserCommand( $usersRepository, new DummyLogger() );
     // Запускаем команду
     $command->handle(new Arguments([
       'username' => 'ivan',

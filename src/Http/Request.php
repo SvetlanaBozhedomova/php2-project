@@ -76,9 +76,9 @@ class Request                //класс запроса
     // Пытаемся декодировать json
     try {
       $data = json_decode(
-        $this->body,         // декодировать json
-        true, 512,           // associative=true - в ассоциативный массив
-        JSON_THROW_ON_ERROR  // flags - бросаем исключение при ошибке
+        $this->body,                 // декодировать json
+        associative: true,           // в ассоциативный массив
+        flags: JSON_THROW_ON_ERROR   // бросаем исключение при ошибке
       );
     } catch (JsonException $e) {
       throw new HttpException("Cannot decode json body");
@@ -90,7 +90,7 @@ class Request                //класс запроса
   }
 
   // Получение отдельного поля из json-форматированного тела запроса
-  public function jsonBodyField(string $field): string  //mixed
+  public function jsonBodyField(string $field): mixed
   {
     $data = $this->jsonBody();
     if (!array_key_exists($field, $data)) {

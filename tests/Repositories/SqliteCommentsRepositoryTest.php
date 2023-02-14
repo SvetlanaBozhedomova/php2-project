@@ -12,6 +12,7 @@ use GeekBrains\php2\Blog\Comment;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\TestCase;
+use GeekBrains\php2\UnitTests\DummyLogger;
 
 class SqliteCommentsRepositoryTest extends TestCase
 {
@@ -34,7 +35,7 @@ class SqliteCommentsRepositoryTest extends TestCase
     $connectionStub->method('prepare')->willReturn($statementMock);
     
     // Создать SqliteCommentsRepository(PDO) и вызвать save(Comment)
-    $repository = new SqliteCommentsRepository($connectionStub);
+    $repository = new SqliteCommentsRepository($connectionStub, new DummyLogger());
 
     $user = new User(
       new UUID('7fdc9d52-319f-4340-ba50-4c2da3947dfc'),
@@ -75,7 +76,7 @@ class SqliteCommentsRepositoryTest extends TestCase
     $connectionStub->method('prepare')->willReturn($statementMock);
 
     // Создать SqliteCommentsRepository(PDO) и вызвать get(UUID): Comment
-    $repository = new SqliteCommentsRepository($connectionStub);
+    $repository = new SqliteCommentsRepository($connectionStub, new DummyLogger());
     $comment = $repository->get( new UUID('5aea6e16-3b14-4b15-b7a1-ea66d9005d28'));
 
     // Сравнить заданное (string)uuid и полученное (string)$comment->uuid()
@@ -94,7 +95,7 @@ class SqliteCommentsRepositoryTest extends TestCase
     $connectionStub->method('prepare')->willReturn($statementStub);
     
     // Создать SqliteCommentsRepository(PDO)
-    $repository = new SqliteCommentsRepository($connectionStub);
+    $repository = new SqliteCommentsRepository($connectionStub, new DummyLogger());
     // Описать тип ожидаемого исключения и его сообщения
     $this->expectException(CommentNotFoundException::class);
     $this->expectExceptionMessage(

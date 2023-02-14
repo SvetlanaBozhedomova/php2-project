@@ -44,7 +44,7 @@ class DeletePost implements ActionInterface
     
     // Удаляем статью из репозитория
     $this->postsRepository->delete(new UUID($postUuid));
-    $this->logger->info("Post deleted: $newPostUuid");
+    $this->logger->info("Post deleted: $postUuid");
     // Возвращаем успешный ответ с uuid удалённой статьи
     return new SuccessfulResponse(['uuid' => $postUuid]);
   }

@@ -45,7 +45,7 @@ class SqlitePostsRepository implements PostsRepositoryInterface
       throw new PostNotFoundException($message);
     }
 
-    $usersRepository = new SqliteUsersRepository($this->connection);
+    $usersRepository = new SqliteUsersRepository($this->connection, $this->logger);
     $user = $usersRepository->get( new UUID($result['author_uuid']) );
     
     return new Post(

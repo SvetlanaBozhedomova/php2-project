@@ -46,9 +46,9 @@ class SqliteCommentsRepository implements CommentsRepositoryInterface
       throw new CommentNotFoundException($message);
     }
 
-    $usersRepository = new SqliteUsersRepository($this->connection);
+    $usersRepository = new SqliteUsersRepository($this->connection, $this->logger);
     $user = $usersRepository->get( new UUID($result['author_uuid']) );
-    $postsRepository = new SqlitePostsRepository($this->connection);
+    $postsRepository = new SqlitePostsRepository($this->connection, $this->logger);
     $post = $postsRepository->get( new UUID($result['post_uuid']) );
 
     return new Comment(

@@ -17,6 +17,10 @@ use GeekBrains\php2\Blog\Name;
 use GeekBrains\php2\Blog\UUID;
 use PHPUnit\Framework\TestCase;
 use GeekBrains\php2\UnitTests\DummyLogger;
+use GeekBrains\php2\Blog\Exceptions\AuthException;
+use GeekBrains\php2\Http\Auth\IdentificationInterface;
+use GeekBrains\php2\Http\Auth\JsonBodyUsernameIdentification;
+use GeekBrains\php2\Http\Auth\JsonBodyUuidIdentification;
 
 class CreatePostActionTest extends TestCase
 {
@@ -94,72 +98,74 @@ class CreatePostActionTest extends TestCase
   /**
    * @runInSeparateProcess
    * @preserveGlobalState disabled
-   */ /*
+   */  /*
   public function testItReturnsSuccessfulResponse(): void
   {
     // Создаём объект запроса
     $request = new Request([], [],
-      '{"author_uuid":"10abc537-0805-4d7a-830e-22b481b4859c","title":"title","text":"text"}');
+      '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093","title":"title","text":"text"}');
 
-    // Создаём стаб репозитории
+    // Создаём стабы репозиториев
     $postsRepository = $this->postsRepository();
-
-    $usersRepository = $this->usersRepository([
-      new User(
-        new UUID('10abc537-0805-4d7a-830e-22b481b4859c'),
-        'username',
-        new Name('name', 'surname')                
-      ),
-    ]);
-
+    $authStub = $this->createStub(JsonBodyUsernameIdentification::class);
+    $authStub
+      ->method('user')
+      ->willReturn( new User(
+        new UUID("b2fe9e77-6570-4bd2-b93f-b631b448d093"),
+        'user',
+        new Name('Name', 'Surname')
+      ));
+      
     // Создаём тестируемый объект действия
-    $action = new CreatePost($usersRepository, $postsRepository, new DummyLogger());
+    $action = new CreatePost($postsRepository, new DummyLogger(), $authStub);
+
     // Запускаем действие
     $response = $action->handle($request);
+
     // Проверяем, что ответ удачный
     $this->assertInstanceOf(SuccessfulResponse::class, $response);
 
-    $this->setOutputCallback(function ($data){
+    $this->setOutputCallback(function ($data) {
       $dataDecode = json_decode(
         $data,
         associative: true,
         flags: JSON_THROW_ON_ERROR
       );
       $dataDecode['data']['uuid'] = "351739ab-fc33-49ae-a62d-b606b7038c87";
-      return json_encode(
-        $dataDecode,
-        JSON_THROW_ON_ERROR
-      );
+      return json_encode($dataDecode, JSON_THROW_ON_ERROR);
     });
-
     $this->expectOutputString('{"success":true,"data":{"uuid":"351739ab-fc33-49ae-a62d-b606b7038c87"}}');
 
     $response->send();
-  }  */
+  }   */
 
   // Тест, проверяющий, что будет возвращён неудачный ответ,
   // если пользователь не найден по этому uuid
   /**
    * @runInSeparateProcess
    * @preserveGlobalState disabled
-   */
+   */    /*
   public function testItReturnsErrorResponseIfUserNotFound(): void
   {
-    $request = new Request([], [], '{"author_uuid":"10373537-0805-4d7a-830e-22b481b4859c","title":"title","text":"text"}');
+    $request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093","title":"title","text":"text"}');
 
-    $postsRepository = $this->postsRepository();
-    $usersRepository = $this->usersRepository([]);
+    $postsRepository = $this->postsRepository([]);
+    $authStub = $this->createStub(JsonBodyUuidIdentification::class);
+    $authStub
+      ->method('user')
+      ->willThrowException(
+        new AuthException('User not found: b2fe9e77-6570-4bd2-b93f-b631b448d093')
+      );
 
-    $action = new CreatePost($usersRepository, $postsRepository,
-      new DummyLogger());
-
+    $action = new CreatePost($postsRepository, new DummyLogger(), $authStub);
+    
     $response = $action->handle($request);
-
+    
     $this->assertInstanceOf(ErrorResponse::class, $response);
-    $this->expectOutputString('{"success":false,"reason":"Cannot find user: 10373537-0805-4d7a-830e-22b481b4859c"}');
+    $this->expectOutputString('{"success":false,"reason":"User not found: b2fe9e77-6570-4bd2-b93f-b631b448d093"}');
 
     $response->send();
-  }
+  }       */
 
   // Тест, проверяющий, что будет возвращён неудачный ответ,
   // если в запросе нет параметра title.
@@ -170,19 +176,19 @@ class CreatePostActionTest extends TestCase
    */
   public function testItReturnsErrorResponseIfNoTitleProvided(): void
   {
-    $request = new Request([], [], '{"author_uuid":"10373537-0805-4d7a-830e-22b481b4859c","text":"text"}');
+    $request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093","text":"text"}');
 
     $postsRepository = $this->postsRepository([]);
-    $usersRepository = $this->usersRepository([
-      new User(
-        new UUID('10373537-0805-4d7a-830e-22b481b4859c'),
-        'username',
-        new Name('name', 'surname')
-      ),
-    ]);
-
-    $action = new CreatePost($usersRepository, $postsRepository,
-      new DummyLogger());
+    $authStub = $this->createStub(JsonBodyUuidIdentification::class);
+    $authStub
+      ->method('user')
+      ->willReturn( new User(
+        new UUID("b2fe9e77-6570-4bd2-b93f-b631b448d093"),
+        'user',
+        new Name('Name', 'Surname')
+      ));
+    
+    $action = new CreatePost($postsRepository, new DummyLogger(), $authStub);
 
     $response = $action->handle($request);
 
@@ -201,19 +207,18 @@ class CreatePostActionTest extends TestCase
    */
   public function testItReturnsErrorResponseIfNoTextProvided(): void
   {
-    $request = new Request([], [], '{"author_uuid":"10373537-0805-4d7a-830e-22b481b4859c","title":"title"}');
+    $request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093","title":"title"}');
 
     $postsRepository = $this->postsRepository([]);
-    $usersRepository = $this->usersRepository([
-      new User(
-        new UUID('10373537-0805-4d7a-830e-22b481b4859c'),
-        'username',
-        new Name('name', 'surname')
-      ),
-    ]);
-
-    $action = new CreatePost($usersRepository, $postsRepository,
-      new DummyLogger());
+    $authStub = $this->createStub(JsonBodyUuidIdentification::class);
+    $authStub
+      ->method('user')
+      ->willReturn( new User(
+        new UUID("b2fe9e77-6570-4bd2-b93f-b631b448d093"),
+        'user',
+        new Name('Name', 'Surname')
+      ));
+    $action = new CreatePost($postsRepository, new DummyLogger(), $authStub);
 
     $response = $action->handle($request);
 
