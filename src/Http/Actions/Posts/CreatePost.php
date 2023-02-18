@@ -13,30 +13,37 @@ use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Post;
 use Psr\Log\LoggerInterface;
-use GeekBrains\php2\Http\Auth\IdentificationInterface;
+use GeekBrains\php2\Http\Auth\AuthenticationInterface;
+use GeekBrains\php2\Blog\Exceptions\AuthException;
 
 class CreatePost implements ActionInterface
 {
   private PostsRepositoryInterface $postsRepository;
   private LoggerInterface $logger;
-  private IdentificationInterface $identification;
+  private AuthenticationInterface $authentication;
 
   public function __construct(
     PostsRepositoryInterface $postsRepository,
     LoggerInterface $logger,
-    IdentificationInterface $identification)
+    AuthenticationInterface $authentication)
   {
     $this->postsRepository = $postsRepository;
     $this->logger = $logger;
-    $this->identification = $identification;
+    $this->authentication = $authentication;
   }
 
   public function handle(Request $request): Response
   {
-    //$this->logger->info("CreatePost started");
+    $this->logger->info("CreatePost started");
 
-    // Идентифицируем пользователя - автора статьи
-    $user = $this->identification->user($request);
+    // Аутентифицируем пользователя - автора статьи
+    try {
+      $user = $this->authentication->user($request);
+    } catch (AuthException $e) {
+      $message = $e->getMessage();
+      $this->logger->warning($message);
+      return new ErrorResponse($message);
+    }
 
     // Генерируем uuid для новой статьи
     $newPostUuid = UUID::random();
@@ -53,7 +60,7 @@ class CreatePost implements ActionInterface
     }
     // Сохраняем новую статью в репозитории
     $this->postsRepository->save($post);
-    $this->logger->info("Post created: $newPostUuid");
+    //$this->logger->info("Post created: $newPostUuid");
 
     // Возвращаем успешный ответ с uuid новой статьи
     return new SuccessfulResponse(['uuid' => (string)$newPostUuid]);

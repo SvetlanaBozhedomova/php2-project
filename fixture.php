@@ -1,7 +1,7 @@
 <?php
 
 $pdo = new PDO("sqlite:blog.sqlite");
-
+/*
 $pdo->exec('CREATE TABLE users (
     uuid TEXT NOT NULL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
@@ -33,3 +33,5 @@ $pdo->exec('CREATE TABLE likes (
   FOREIGN KEY (post_uuid) REFERENCES posts (uuid),
   FOREIGN KEY (user_uuid) REFERENCES users (uuid)  
 )');
+*/
+$pdo->exec('ALTER TABLE users ADD password TEXT');

@@ -24,11 +24,17 @@ class SqliteUsersRepository implements UsersRepositoryInterface
   public function save(User $user):void
   { 
     $stm = $this->connection->prepare('INSERT INTO users 
-      (uuid, username, first_name, last_name) VALUES 
-      (:uuid, :username, :first_name, :last_name)');
+      (uuid, username, password, first_name, last_name) VALUES
+      (:uuid, :username, :password, :first_name, :last_name)
+      ON CONFLICT (uuid)
+        DO UPDATE SET
+          first_name = :first_name,
+          last_name = :last_name
+    ');
     $stm->execute([
       ':uuid' => (string)$user->uuid(),
       ':username' => $user->username(),
+      ':password' => $user->password(),
       ':first_name' => (string)$user->name()->first(),
       ':last_name' => (string)$user->name()->last()
     ]);  
@@ -67,6 +73,7 @@ class SqliteUsersRepository implements UsersRepositoryInterface
     return new User(
       new UUID($result['uuid']), 
       $result['username'],
+      $result['password'],
       new Name($result['first_name'], $result['last_name'])
     );
   }
