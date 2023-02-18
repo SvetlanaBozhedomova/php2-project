@@ -14,17 +14,20 @@ use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Post;
 use Psr\Log\LoggerInterface;
 use GeekBrains\php2\Http\Auth\AuthenticationInterface;
+//use GeekBrains\php2\Http\Auth\TokenAuthenticationInterface;
 use GeekBrains\php2\Blog\Exceptions\AuthException;
 
 class CreatePost implements ActionInterface
 {
   private PostsRepositoryInterface $postsRepository;
   private LoggerInterface $logger;
+  //private TokenAuthenticationInterface $authentication;
   private AuthenticationInterface $authentication;
 
   public function __construct(
     PostsRepositoryInterface $postsRepository,
     LoggerInterface $logger,
+    //TokenAuthenticationInterface $authentication)
     AuthenticationInterface $authentication)
   {
     $this->postsRepository = $postsRepository;

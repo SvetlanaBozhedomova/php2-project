@@ -39,10 +39,11 @@ class User {
   public static function createFrom(
     string $username, string $password, Name $name): self
   {
+    $uuid = UUID::random();
     return new self(
-      UUID::random(),
+      $uuid,
       $username,
-      self::hash($password),
+      self::hash($password, $uuid),
       $name
     );
   }

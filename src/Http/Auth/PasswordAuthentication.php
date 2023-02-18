@@ -9,7 +9,7 @@ use GeekBrains\php2\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\php2\Blog\Exceptions\HttpException;
 use GeekBrains\php2\Blog\Exceptions\AuthException;
 
-class PasswordAuthentication implements AuthenticationInterface
+class PasswordAuthentication implements PasswordAuthenticationInterface
 {
   private UsersRepositoryInterface $usersRepository;
 

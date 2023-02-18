@@ -33,5 +33,11 @@ $pdo->exec('CREATE TABLE likes (
   FOREIGN KEY (post_uuid) REFERENCES posts (uuid),
   FOREIGN KEY (user_uuid) REFERENCES users (uuid)  
 )');
-*/
+
 $pdo->exec('ALTER TABLE users ADD password TEXT');
+*/
+$pdo->exec('CREATE TABLE tokens (
+  token TEXT NOT NULL PRIMARY KEY,
+  user_uuid TEXT NOT NULL,
+  expires_on TEXT NOT NULL
+)');

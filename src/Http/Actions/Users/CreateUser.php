@@ -30,12 +30,22 @@ class CreateUser implements ActionInterface
 
   public function handle(Request $request): Response
   {
-    // Пытаемся создать пользователя из данных запроса
+    $this->logger->info("CreateUser started");
+
+    // Проверяем, существует ли пользователь в репозитории
+    $username = $request->jsonBodyField('username');
+    if ($this->userExists($username)) {
+      $message = "User already exists: $username";
+      $this->logger->warning($message);
+      return new ErrorResponse($message);
+    }
+
+    // Пытаемся создать пользователя из данных запроса.
+    // createForm создаёт польз-ля и хеширует пароль
     try {
-      $newUserUuid = UUID::random();
-      $user = new User(
-        $newUserUuid,
-        $request->jsonBodyField('username'),
+      $user = User::createFrom(
+        $username,
+        $request->jsonBodyField('password'),
         new Name (
           $request->jsonBodyField('first_name'),
           $request->jsonBodyField('last_name')
@@ -44,10 +54,22 @@ class CreateUser implements ActionInterface
     } catch (HttpException $e) {
       return new ErrorResponse($e->getMessage());
     }
+
     // Сохраняем пользователя в репозитории
     $this->usersRepository->save($user);
-    $this->logger->info("User created: $newUserUuid");
+    $this->logger->info('User created: ' . (string)$user->uuid());
+
     // Возвращаем успешный ответ, содержащий UUID нового пользователя 
-    return new SuccessfulResponse(['uuid' => (string)$newUserUuid]);
+    return new SuccessfulResponse(['uuid' => (string)$user->uuid()]);
+  }
+
+  private function userExists(string $username): bool
+  {
+    try {       // Пытаемся получить пользователя из репозитория
+      $this->usersRepository->getByUsername($username);
+    } catch (UserNotFoundException $e) {
+      return false;
+    }
+    return true;
   }
 }

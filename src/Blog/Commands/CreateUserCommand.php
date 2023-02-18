@@ -35,14 +35,14 @@ final class CreateUserCommand
     }
     // Создаём пользователя, createForm создаёт польз-ля
     // и хеширует пароль
-    $user = User::createForm(
+    $user = User::createFrom(
       $username,
       $arguments->get('password'),
       new Name($arguments->get('first_name'), $arguments->get('last_name'))
     );
     // Сохраняем пользователя
     $this->usersRepository->save($user);
-    $this->logger->info("User created: $user->uuid()");
+    $this->logger->info('User created: ' . (string)$user->uuid());
   }
   
   private function userExists(string $username): bool

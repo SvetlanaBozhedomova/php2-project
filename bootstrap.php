@@ -9,14 +9,19 @@ use GeekBrains\php2\Blog\Repositories\CommentsRepository\SqliteCommentsRepositor
 use GeekBrains\php2\Blog\Repositories\CommentsRepository\CommentsRepositoryInterface;
 use GeekBrains\php2\Blog\Repositories\LikesRepository\SqliteLikesRepository;
 use GeekBrains\php2\Blog\Repositories\LikesRepository\LikesRepositoryInterface;
+use GeekBrains\php2\Blog\Repositories\AuthTokensRepository\SqliteAuthTokensRepository;
+use GeekBrains\php2\Blog\Repositories\AuthTokensRepository\AuthTokensRepositoryInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Psr\Log\LoggerInterface;
 use Dotenv\Dotenv;
-use GeekBrains\php2\Http\Auth\IdentificationInterface;
-use GeekBrains\php2\Http\Auth\JsonBodyUuidIdentification;
+//use GeekBrains\php2\Http\Auth\IdentificationInterface;
+//use GeekBrains\php2\Http\Auth\JsonBodyUuidIdentification;
 use GeekBrains\php2\Http\Auth\AuthenticationInterface;
+use GeekBrains\php2\Http\Auth\PasswordAuthenticationInterface;
+use GeekBrains\php2\Http\Auth\TokenAuthenticationInterface;
 use GeekBrains\php2\Http\Auth\PasswordAuthentication;
+use GeekBrains\php2\Http\Auth\BearerTokenAuthentication;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -67,11 +72,23 @@ $container->bind(
 );
 
 // Идентификация
-$container->bind(
-  IdentificationInterface::class,
-  JsonBodyUuidIdentification::class
-);
+    //$container->bind(
+    //  IdentificationInterface::class,
+    //  JsonBodyUuidIdentification::class
+    //);
 // Аутентификация
+$container->bind(
+  PasswordAuthenticationInterface::class,
+  PasswordAuthentication::class
+);
+$container->bind(
+  AuthTokensRepositoryInterface::class,
+  SqliteAuthTokensRepository::class
+);
+$container->bind(
+  TokenAuthenticationInterface::class,
+  BearerTokenAuthentication::class
+);
 $container->bind(
   AuthenticationInterface::class,
   PasswordAuthentication::class

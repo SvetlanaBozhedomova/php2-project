@@ -34,7 +34,7 @@ class SqliteUsersRepository implements UsersRepositoryInterface
     $stm->execute([
       ':uuid' => (string)$user->uuid(),
       ':username' => $user->username(),
-      ':password' => $user->password(),
+      ':password' => $user->hashedPassword(),
       ':first_name' => (string)$user->name()->first(),
       ':last_name' => (string)$user->name()->last()
     ]);  
