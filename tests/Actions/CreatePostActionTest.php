@@ -18,9 +18,11 @@ use GeekBrains\php2\Blog\UUID;
 use PHPUnit\Framework\TestCase;
 use GeekBrains\php2\UnitTests\DummyLogger;
 use GeekBrains\php2\Blog\Exceptions\AuthException;
-use GeekBrains\php2\Http\Auth\IdentificationInterface;
-use GeekBrains\php2\Http\Auth\JsonBodyUsernameIdentification;
-use GeekBrains\php2\Http\Auth\JsonBodyUuidIdentification;
+//use GeekBrains\php2\Http\Auth\IdentificationInterface;
+//use GeekBrains\php2\Http\Auth\JsonBodyUsernameIdentification;
+//use GeekBrains\php2\Http\Auth\JsonBodyUuidIdentification;
+use GeekBrains\php2\Http\Auth\AuthenticationInterface;
+use GeekBrains\php2\Http\Auth\PasswordAuthentication;
 
 class CreatePostActionTest extends TestCase
 {
@@ -144,7 +146,7 @@ class CreatePostActionTest extends TestCase
   /**
    * @runInSeparateProcess
    * @preserveGlobalState disabled
-   */    /*
+   */   /*
   public function testItReturnsErrorResponseIfUserNotFound(): void
   {
     $request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093","title":"title","text":"text"}');
@@ -165,7 +167,7 @@ class CreatePostActionTest extends TestCase
     $this->expectOutputString('{"success":false,"reason":"User not found: b2fe9e77-6570-4bd2-b93f-b631b448d093"}');
 
     $response->send();
-  }       */
+  }   */    
 
   // Тест, проверяющий, что будет возвращён неудачный ответ,
   // если в запросе нет параметра title.
@@ -176,15 +178,18 @@ class CreatePostActionTest extends TestCase
    */
   public function testItReturnsErrorResponseIfNoTitleProvided(): void
   {
-    $request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093","text":"text"}');
+    //$request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093",
+    //"text":"text"}');
+    $request = new Request([], [], '{"username":"user","password":"123","text":"Text"}');
 
     $postsRepository = $this->postsRepository([]);
-    $authStub = $this->createStub(JsonBodyUuidIdentification::class);
+    $authStub = $this->createStub(PasswordAuthentication::class);
     $authStub
       ->method('user')
       ->willReturn( new User(
         new UUID("b2fe9e77-6570-4bd2-b93f-b631b448d093"),
         'user',
+        'afc44a15c0dfbdd3fb862aaa81d1cc14357fa041e4e7128e6ef5a91ef8438573',
         new Name('Name', 'Surname')
       ));
     
@@ -207,15 +212,18 @@ class CreatePostActionTest extends TestCase
    */
   public function testItReturnsErrorResponseIfNoTextProvided(): void
   {
-    $request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093","title":"title"}');
+    //$request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093",
+    //"title":"title"}');
+    $request = new Request([], [], '{"username":"user","password":"123","title":"Title"}');
 
     $postsRepository = $this->postsRepository([]);
-    $authStub = $this->createStub(JsonBodyUuidIdentification::class);
+    $authStub = $this->createStub(PasswordAuthentication::class);
     $authStub
       ->method('user')
       ->willReturn( new User(
         new UUID("b2fe9e77-6570-4bd2-b93f-b631b448d093"),
         'user',
+        'afc44a15c0dfbdd3fb862aaa81d1cc14357fa041e4e7128e6ef5a91ef8438573',
         new Name('Name', 'Surname')
       ));
     $action = new CreatePost($postsRepository, new DummyLogger(), $authStub);

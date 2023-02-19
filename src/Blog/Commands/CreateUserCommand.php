@@ -24,23 +24,25 @@ final class CreateUserCommand
 
   public function handle(Arguments $arguments): void
   {
-    //$this->logger->info("Create user command started");
+    $this->logger->info("Create user command started");
+
     $username = $arguments->get('username');
-     // Проверяем, существует ли пользователь в репозитории
+    // Проверяем, существует ли пользователь в репозитории
     if ($this->userExists($username)) {
       $message = "User already exists: $username";
-      var_dump($message);
       $this->logger->warning($message);
       throw new CommandException($message);
     }
-     // Сохраняем пользователя в репозиторий
-    $uuid = UUID::random(); 
-    $this->usersRepository->save(new User(
-      $uuid,
+    // Создаём пользователя, createForm создаёт польз-ля
+    // и хеширует пароль
+    $user = User::createFrom(
       $username,
+      $arguments->get('password'),
       new Name($arguments->get('first_name'), $arguments->get('last_name'))
-    ));
-    $this->logger->info("User created: $uuid");
+    );
+    // Сохраняем пользователя
+    $this->usersRepository->save($user);
+    $this->logger->info('User created: ' . (string)$user->uuid());
   }
   
   private function userExists(string $username): bool
