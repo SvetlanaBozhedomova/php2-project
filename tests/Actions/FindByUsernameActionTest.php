@@ -73,7 +73,7 @@ class FindByUsernameActionTest extends TestCase
     $request = new Request(['username' => 'ivan'], [], '');
     // На этот раз в репозитории есть нужный нам пользователь
     $usersRepository = $this->usersRepository([
-      new User(UUID::random(), 'ivan', new Name('Ivan', 'Nikitin'))
+      new User(UUID::random(), 'ivan', '123', new Name('Ivan', 'Nikitin'))
     ]);
     $action = new FindByUsername($usersRepository);
     $response = $action->handle($request);
