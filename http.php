@@ -11,6 +11,7 @@ use GeekBrains\php2\Http\Actions\Comments\CreateComment;
 use GeekBrains\php2\Http\Actions\Likes\CreateLike;
 use GeekBrains\php2\Http\Actions\Posts\DeletePost;
 use GeekBrains\php2\Http\Actions\Auth\LogIn;
+use GeekBrains\php2\Http\Actions\Auth\LogOut;
 use GeekBrains\php2\Blog\Exceptions\AppException;
 use Psr\Log\LoggerInterface;
 
@@ -49,6 +50,7 @@ $routes = [
   ],
   'POST' => [
     '/login' => LogIn::class,
+    '/logout' => LogOut::class,
     '/users/create' => CreateUser::class,
     '/posts/create' => CreatePost::class,
     '/comments/create' => CreateComment::class,

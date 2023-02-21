@@ -13,22 +13,19 @@ use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\UUID;
 use GeekBrains\php2\Blog\Post;
 use Psr\Log\LoggerInterface;
-use GeekBrains\php2\Http\Auth\AuthenticationInterface;
-//use GeekBrains\php2\Http\Auth\TokenAuthenticationInterface;
+use GeekBrains\php2\Http\Auth\TokenAuthenticationInterface;
 use GeekBrains\php2\Blog\Exceptions\AuthException;
 
 class CreatePost implements ActionInterface
 {
   private PostsRepositoryInterface $postsRepository;
   private LoggerInterface $logger;
-  //private TokenAuthenticationInterface $authentication;
-  private AuthenticationInterface $authentication;
+  private TokenAuthenticationInterface $authentication;
 
   public function __construct(
     PostsRepositoryInterface $postsRepository,
     LoggerInterface $logger,
-    //TokenAuthenticationInterface $authentication)
-    AuthenticationInterface $authentication)
+    TokenAuthenticationInterface $authentication)
   {
     $this->postsRepository = $postsRepository;
     $this->logger = $logger;
@@ -59,7 +56,9 @@ class CreatePost implements ActionInterface
         $request->jsonBodyField('text'),
       );
     } catch (HttpException $e) {
-      return new ErrorResponse($e->getMessage());
+      $message = $e->getMessage();
+      $this->logger->warning($message);  
+      return new ErrorResponse($message);
     }
     // Сохраняем новую статью в репозитории
     $this->postsRepository->save($post);

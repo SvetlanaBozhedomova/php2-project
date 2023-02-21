@@ -9,7 +9,8 @@ use GeekBrains\php2\Http\SuccessfulResponse;
 use GeekBrains\php2\Http\ErrorResponse;
 use GeekBrains\php2\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\php2\Blog\Exceptions\HttpException;
-use GeekBrains\php2\Blog\Exceptions\InvalidArgumentException;
+//use GeekBrains\php2\Blog\Exceptions\InvalidArgumentException;
+use GeekBrains\php2\Blog\Exceptions\UserNotFoundException;
 use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\Name;
 use GeekBrains\php2\Blog\UUID;
@@ -38,7 +39,7 @@ class CreateUser implements ActionInterface
       $message = "User already exists: $username";
       $this->logger->warning($message);
       return new ErrorResponse($message);
-    }
+    } 
 
     // Пытаемся создать пользователя из данных запроса.
     // createForm создаёт польз-ля и хеширует пароль
@@ -52,12 +53,14 @@ class CreateUser implements ActionInterface
         )
       );
     } catch (HttpException $e) {
-      return new ErrorResponse($e->getMessage());
+      $message = $e->getMessage();
+      $this->logger->warning($message); 
+      return new ErrorResponse($message);
     }
 
     // Сохраняем пользователя в репозитории
     $this->usersRepository->save($user);
-    $this->logger->info('User created: ' . (string)$user->uuid());
+    //$this->logger->info('User created: ' . (string)$user->uuid());
 
     // Возвращаем успешный ответ, содержащий UUID нового пользователя 
     return new SuccessfulResponse(['uuid' => (string)$user->uuid()]);

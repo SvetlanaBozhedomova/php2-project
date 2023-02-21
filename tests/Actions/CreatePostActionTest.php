@@ -10,7 +10,8 @@ use GeekBrains\php2\Blog\Repositories\PostsRepository\PostsRepositoryInterface;
 use GeekBrains\php2\Blog\Repositories\UsersRepository\UsersRepositoryInterface;
 use GeekBrains\php2\Blog\Exceptions\PostNotFoundException;
 use GeekBrains\php2\Blog\Exceptions\UserNotFoundException;
-use GeekBrains\php2\Blog\Exceptions\JsonException;
+//use GeekBrains\php2\Blog\Exceptions\JsonException;
+use GeekBrains\php2\Blog\Exceptions\HttpException; //
 use GeekBrains\php2\Blog\Post;
 use GeekBrains\php2\Blog\User;
 use GeekBrains\php2\Blog\Name;
@@ -21,8 +22,10 @@ use GeekBrains\php2\Blog\Exceptions\AuthException;
 //use GeekBrains\php2\Http\Auth\IdentificationInterface;
 //use GeekBrains\php2\Http\Auth\JsonBodyUsernameIdentification;
 //use GeekBrains\php2\Http\Auth\JsonBodyUuidIdentification;
-use GeekBrains\php2\Http\Auth\AuthenticationInterface;
-use GeekBrains\php2\Http\Auth\PasswordAuthentication;
+//use GeekBrains\php2\Http\Auth\AuthenticationInterface;
+//use GeekBrains\php2\Http\Auth\PasswordAuthentication;
+use GeekBrains\php2\Http\Auth\TokenAuthenticationInterface;
+use GeekBrains\php2\Http\Auth\BearerTokenAuthentication;
 
 class CreatePostActionTest extends TestCase
 {
@@ -180,10 +183,11 @@ class CreatePostActionTest extends TestCase
   {
     //$request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093",
     //"text":"text"}');
-    $request = new Request([], [], '{"username":"user","password":"123","text":"Text"}');
+    //$request = new Request([], [], '{"username":"user","password":"123","text":"Text"}');
+    $request = new Request([], [], '{"text":"Text"}');
 
     $postsRepository = $this->postsRepository([]);
-    $authStub = $this->createStub(PasswordAuthentication::class);
+    $authStub = $this->createStub(BearerTokenAuthentication::class);
     $authStub
       ->method('user')
       ->willReturn( new User(
@@ -214,10 +218,11 @@ class CreatePostActionTest extends TestCase
   {
     //$request = new Request([], [], '{"author_uuid":"b2fe9e77-6570-4bd2-b93f-b631b448d093",
     //"title":"title"}');
-    $request = new Request([], [], '{"username":"user","password":"123","title":"Title"}');
+    //$request = new Request([], [], '{"username":"user","password":"123","title":"Title"}');
+    $request = new Request([], [], '{"title":"Title"}');
 
     $postsRepository = $this->postsRepository([]);
-    $authStub = $this->createStub(PasswordAuthentication::class);
+    $authStub = $this->createStub(BearerTokenAuthentication::class);
     $authStub
       ->method('user')
       ->willReturn( new User(
