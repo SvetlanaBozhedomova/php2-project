@@ -21,7 +21,8 @@
         "ext-pdo": "*",
         "symfony/polyfill-uuid": "^1.27",
         "monolog/monolog": "^3.3",
-        "vlucas/phpdotenv": "^5.5"
+        "vlucas/phpdotenv": "^5.5",
+        "symfony/console": "^6.2"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",

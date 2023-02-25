@@ -22,6 +22,10 @@ use GeekBrains\php2\Http\Auth\PasswordAuthenticationInterface;
 use GeekBrains\php2\Http\Auth\TokenAuthenticationInterface;
 use GeekBrains\php2\Http\Auth\PasswordAuthentication;
 use GeekBrains\php2\Http\Auth\BearerTokenAuthentication;
+use Faker\Provider\Lorem;
+use Faker\Provider\ru_RU\Internet;
+use Faker\Provider\ru_RU\Person;
+use Faker\Provider\ru_RU\Text;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -92,6 +96,18 @@ $container->bind(
 $container->bind(
   AuthenticationInterface::class,
   PasswordAuthentication::class
+);
+
+// Добавляем генерацию тестовых данных
+$faker = new \Faker\Generator();
+$faker->addProvider(new Person($faker));
+$faker->addProvider(new Text($faker));
+$faker->addProvider(new Internet($faker));
+$faker->addProvider(new Lorem($faker));
+
+$container->bind(
+  \Faker\Generator::class,
+  $faker
 );
 
 // Возвращаем объект контейнера
